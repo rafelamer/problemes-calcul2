@@ -2637,8 +2637,8 @@ class LinearAlgebra():
 	def draw_parametric_surface(self,eq,range_u_min,range_u_max,range_u_step,range_v_min,range_v_max,range_v_step,name,wrap_u=True,wrap_v=False,close_v=False):
 		verts = []
 		faces = []
-		uStep = (range_u_max - range_u_min) / range_u_step
-		vStep = (range_v_max - range_v_min) / range_v_step
+		uStep = (range_u_max - range_u_min) / (range_u_step - 1)
+		vStep = (range_v_max - range_v_min) / (range_v_step - 1)
 		uRange = range_u_step + 1
 		vRange = range_v_step + 1
 
@@ -2646,6 +2646,7 @@ class LinearAlgebra():
 			uRange = uRange - 1
 		if wrap_v:
 			vRange = vRange - 1
+
 
 		for vN in range(vRange):
 			v = range_v_min + (vN * vStep)
