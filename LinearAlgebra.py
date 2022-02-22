@@ -27,8 +27,6 @@
 import math
 import bpy
 import bmesh
-import mathutils
-import numpy
 from bpy_extras import object_utils
 from mathutils import Vector, Matrix, Euler, Quaternion
 
