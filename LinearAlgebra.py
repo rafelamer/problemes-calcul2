@@ -2343,7 +2343,7 @@ class LinearAlgebra():
 	#
 	#
 	#
-	def parabolic_cylinder(self,o=[0,0,0],u1=[1,0,0],u2=[0,1,0],a=1,principal=True,canonica=True,color="AzureBlueDark",name="ParabolicCylinder",xmax=None,ymax=30,cmax=20,pmax=20,thickness=0.02):
+	def parabolic_cylinder(self,o=[0,0,0],u1=[1,0,0],u2=[0,1,0],a=1,principal=True,canonica=True,color="AzureBlueDark",name="ParabolicCylinder",xmax=None,ymax=30,cmax=20,pmax=20,thickness=0.02,opacity=1.0):
 		if isinstance(u1,Vector):
 			v1 = u1
 		else:
@@ -2379,7 +2379,7 @@ class LinearAlgebra():
 		if xmax is None:
 			xmax = 5.0/a + 1.5
 		xmax /= a
-		self.draw_parabolic_cylinder(p=coef,xmin=0.0,xmax=xmax,length=ymax,color=color,name=name,scale=[a,1,1],thickness=thickness)
+		self.draw_parabolic_cylinder(p=coef,xmin=0.0,xmax=xmax,length=ymax,color=color,name=name,scale=[a,1,1],thickness=thickness,opacity=opacity)
 	#
 	#
 	#
@@ -2635,7 +2635,8 @@ class LinearAlgebra():
 	def draw_parametric_surface(self,eq,range_u_min,range_u_max,range_u_step,range_v_min,range_v_max,range_v_step,name,wrap_u=True,wrap_v=False,close_v=False):
 		verts = []
 		faces = []
-		uStep = (range_u_max - range_u_min) / (range_u_step - 1)
+		if not callable(range_u_min) and not callable(range_u_max):
+			uStep = (range_u_max - range_u_min) / (range_u_step - 1)
 		vStep = (range_v_max - range_v_min) / (range_v_step - 1)
 		uRange = range_u_step + 1
 		vRange = range_v_step + 1
@@ -2645,11 +2646,21 @@ class LinearAlgebra():
 		if wrap_v:
 			vRange = vRange - 1
 
-
 		for vN in range(vRange):
 			v = range_v_min + (vN * vStep)
+			if callable(range_u_min):
+				u_min = range_u_min(v)
+			else:
+				u_min = range_u_min
+			if callable(range_u_max):
+				u_max = range_u_max(v)
+			else:
+				u_max = range_u_max
+			if u_min > u_max:
+				umax = u_min
+			uStep = (u_max - u_min) / (range_u_step - 1)
 			for uN in range(uRange):
-				u = range_u_min + (uN * uStep)
+				u = u_min + (uN * uStep)
 				verts.append(eq(u,v))
 
 		for vN in range(range_v_step):
@@ -2661,6 +2672,31 @@ class LinearAlgebra():
 				if uNext >= uRange:
 					uNext = 0
 				faces.append([(vNext * uRange) + uNext,(vNext * uRange) + uN,(vN * uRange) + uN,(vN * uRange) + uNext])
+
+		# for uN in range(uRange):
+		# 	u = range_u_min + (uN * uStep)
+		# 	if callable(range_v_min):
+		# 		v_min = range_v_min(u)
+		# 	else:
+		# 		v_min = range_v_min
+		# 	if callable(range_v_max):
+		# 		v_max = range_v_max(u)
+		# 	else:
+		# 		v_max = range_v_max
+		# 	vStep = (v_max - v_min) / (range_v_step - 1)
+		# 	for vN in range(vRange):
+		# 		v = v_min + (vN * vStep)
+		# 		verts.append(eq(u,v))
+		#
+		# for uN in range(range_u_step):
+		# 	uNext = uN + 1
+		# 	if uNext >= uRange:
+		# 		uNext = 0
+		# 	for vN in range(range_v_step):
+		# 		vNext = vN + 1
+		# 		if vNext >= vRange:
+		# 			vNext = 0
+		# 		faces.append([(vNext * uRange) + uNext,(vNext * uRange) + uN,(vN * uRange) + uN,(vN * uRange) + uNext])
 
 		if close_v and wrap_u and (not wrap_v):
 			for uN in range(1, range_u_step - 1):
