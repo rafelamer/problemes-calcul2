@@ -2673,31 +2673,6 @@ class LinearAlgebra():
 					uNext = 0
 				faces.append([(vNext * uRange) + uNext,(vNext * uRange) + uN,(vN * uRange) + uN,(vN * uRange) + uNext])
 
-		# for uN in range(uRange):
-		# 	u = range_u_min + (uN * uStep)
-		# 	if callable(range_v_min):
-		# 		v_min = range_v_min(u)
-		# 	else:
-		# 		v_min = range_v_min
-		# 	if callable(range_v_max):
-		# 		v_max = range_v_max(u)
-		# 	else:
-		# 		v_max = range_v_max
-		# 	vStep = (v_max - v_min) / (range_v_step - 1)
-		# 	for vN in range(vRange):
-		# 		v = v_min + (vN * vStep)
-		# 		verts.append(eq(u,v))
-		#
-		# for uN in range(range_u_step):
-		# 	uNext = uN + 1
-		# 	if uNext >= uRange:
-		# 		uNext = 0
-		# 	for vN in range(range_v_step):
-		# 		vNext = vN + 1
-		# 		if vNext >= vRange:
-		# 			vNext = 0
-		# 		faces.append([(vNext * uRange) + uNext,(vNext * uRange) + uN,(vN * uRange) + uN,(vN * uRange) + uNext])
-
 		if close_v and wrap_u and (not wrap_v):
 			for uN in range(1, range_u_step - 1):
 				faces.append([range_u_step - 1,range_u_step - 1 - uN,range_u_step - 2 - uN])
