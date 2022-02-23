@@ -2632,12 +2632,12 @@ class LinearAlgebra():
 	#
 	#
 	#
-	def draw_parametric_surface(self,eq,range_u_min,range_u_max,range_u_step,range_v_min,range_v_max,range_v_step,name,wrap_u=True,wrap_v=False,close_v=False):
+	def draw_parametric_surface(self,eq,range_u_min,range_u_max,range_u_step,range_v_min,range_v_max,range_v_step,name,wrap_u=False,wrap_v=False,close_v=False):
 		verts = []
 		faces = []
 		if not callable(range_u_min) and not callable(range_u_max):
-			uStep = (range_u_max - range_u_min) / (range_u_step - 1)
-		vStep = (range_v_max - range_v_min) / (range_v_step - 1)
+			uStep = (range_u_max - range_u_min) / range_u_step
+		vStep = (range_v_max - range_v_min) / range_v_step
 		uRange = range_u_step + 1
 		vRange = range_v_step + 1
 
@@ -2648,6 +2648,7 @@ class LinearAlgebra():
 
 		for vN in range(vRange):
 			v = range_v_min + (vN * vStep)
+			print(v)
 			if callable(range_u_min):
 				u_min = range_u_min(v)
 			else:
@@ -2656,9 +2657,7 @@ class LinearAlgebra():
 				u_max = range_u_max(v)
 			else:
 				u_max = range_u_max
-			if u_min > u_max:
-				umax = u_min
-			uStep = (u_max - u_min) / (range_u_step - 1)
+			uStep = (u_max - u_min) / range_u_step
 			for uN in range(uRange):
 				u = u_min + (uN * uStep)
 				verts.append(eq(u,v))
@@ -2681,7 +2680,7 @@ class LinearAlgebra():
 	#
 	#
 	#
-	def draw_surface(self,eq=None,umin=-1,umax=1,usteps=64,vmin=-1,vmax=1,vsteps=64,thickness=0.02,opacity=1.0,pmax=10,name="Surface",color="AzureBlueDark",axis=False,o=Vector([0,0,0]),u1=Vector([1,0,0]),u2=Vector([0,1,0]),wrap_u=True,wrap_v=False,close_v=False):
+	def draw_surface(self,eq=None,umin=-1,umax=1,usteps=64,vmin=-1,vmax=1,vsteps=64,thickness=0.02,opacity=1.0,pmax=10,name="Surface",color="AzureBlueDark",axis=False,o=Vector([0,0,0]),u1=Vector([1,0,0]),u2=Vector([0,1,0]),wrap_u=False,wrap_v=False,close_v=False):
 		if eq is None:
 			return
 
