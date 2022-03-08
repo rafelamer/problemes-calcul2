@@ -665,19 +665,22 @@ class LinearAlgebra():
 		return t1
 	#
 	#
+	#
 	def draw_vector(self,vector=None,canonica=False,color="Black",scale=0.05,head_height=0.15,axis=0,name="Vector",positive=True):
 		if vector is None:
-			return
+			return None
+		if isinstance(vector,Vector):
+			vec = vector
+		else:
+			vec = Vector(vector)
+		if vec.length == 0:
+			return None
 		self.base_cilinder()
 		self.base_cone()
 		o = Vector([0,0,0])
 		op = Vector(self.origin)
 		if color is not None:
 			color = Colors.color(color)
-		if isinstance(vector,Vector):
-			vec = vector
-		else:
-			vec = Vector(vector)
 		v = vec
 		if not canonica:
 			mat = Matrix(self.base)
@@ -704,7 +707,7 @@ class LinearAlgebra():
 		obj2.data = obj2.data.copy()
 		obj2.name = "Arrow"
 		obj2.location =  v - 2 * head_height * v / v.length
-		obj2.scale = (scale + 0.05,scale + 0.05,head_height)
+		obj2.scale = (scale + 0.01,scale + 0.01,head_height)
 		obj2.rotation_mode = 'QUATERNION'
 		obj2.rotation_quaternion = (v - o).to_track_quat('Z','Y')
 		if color is not None:
@@ -2733,3 +2736,43 @@ class LinearAlgebra():
 	#
 	def draw_function(self,f=None,xmin=-3,xmax=3,xsteps=64,ymin=-3,ymax=3,ysteps=64,thickness=0.02,opacity=1.0,pmax=10,name="Function",color="AzureBlueDark",axis=False,o=Vector([0,0,0]),u1=Vector([1,0,0]),u2=Vector([0,1,0])):
 		return self.draw_surface(eq=lambda x,y:(x,y,f(x,y)),umin=xmin,umax=xmax,usteps=xsteps,vmin=ymin,vmax=ymax,vsteps=ysteps,thickness=thickness,opacity=opacity,pmax=pmax,name=name,color=color,axis=axis,o=o,u1=u1,u2=u2,wrap_u=False,wrap_v=False,close_v=False)
+	#
+	#
+	#
+	def draw_vector_field(self,f=None,min=None,max=None,steps=None,xmin=-3,xmax=3,xsteps=8,ymin=-3,ymax=3,ysteps=8,zmin=-3,zmax=3,zsteps=8,name="Vector Field",color="Red",scale=0.02,head_height=0.05):
+		if f is None:
+			return None
+		if min is not None:
+			xmin = ymin = zmin = min
+		if max is not None:
+			xmax = ymax = zmax = max
+		if steps is not None:
+			xsteps = ysteps = zsteps = steps
+		xstep = (xmax - xmin)/xsteps
+		ystep = (ymax - ymin)/ysteps
+		zstep = (zmax - zmin)/zsteps
+		if xstep == 0 or ystep == 0 or zstep == 0:
+			return None
+		vectors = []
+		count = 1
+		x = xmin
+		while x <= xmax:
+			y = ymin
+			while y <= ymax:
+				z = zmin
+				while z <= zmax:
+					o = Vector([x,y,z])
+					v = f(x,y,z)
+					if not isinstance(v,Vector):
+						v = Vector(v)
+					self.set_origin(o)
+					vec = self.draw_vector(v,color=color,name=f"Vector{count}",scale=scale,head_height=head_height)
+					if vec is not None:
+						vectors.append(vec)
+					z += zstep
+					count += 1
+				y += ystep
+			x += xstep
+		v = self.join(vectors)
+		bpy.context.object.name = name
+		return v
